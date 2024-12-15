@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Compliment Button</title>
+<style>
+body {
+  font-family: sans-serif;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column; /* Stack elements vertically */
+  min-height: 100vh;
+  background-color: #f0f0f0;
+  transition: background-color 0.5s ease;
+  position: relative; /* Required for positioning the link */
+}
+
+.compliment {
+  background-color: #fff;
+  padding: 20px;
+  border-radius: 5px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+  width: 300px;
+  transition: max-height 0.5s ease-in-out;
+  max-height: 0;
+  border: 1px solid black; /* Add black border */
+}
+
+.compliment.show {
+  max-height: 100px;
+}
+
+.compliment p {
+  margin: 0;
+  line-height: 1.5;
+  color: black; /* Ensure the text color is black */
+}
+
+button {
+  background: linear-gradient(to right, #D4A5A5, #E2D3A1, #B4D9A5, #A5D7D1, #A1B9E2, #B6A4D8, #E1A0C5, #E1B6A9);
+  border: 1px solid black; /* Black outline */
+  color: black; /* Text color inside the button is black */
+  padding: 10px 20px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 16px;
+  border-radius: 5px;
+  cursor: pointer;
+  margin-bottom: 10px;
+  transition: transform 0.2s ease;
+  position: relative;
+  text-shadow: none; /* Remove glow effect */
+}
+
+button.sparkle {
+  animation: sparkle 0.6s ease-in-out infinite;
+}
+
+@keyframes sparkle {
+  0% {
+    transform: scale(1);
+    box-shadow: 0 0 5px #fff, 0 0 10px #fff;
+  }
+  50% {
+    transform: scale(1.1);
+    box-shadow: 0 0 15px #fff, 0 0 20px #fff;
+  }
+  100% {
+    transform: scale(1);
+    box-shadow: 0 0 5px #fff, 0 0 10px #fff;
+  }
+}
+
+/* Styles for the home page link */
+.home-link {
+  position: absolute;
+  bottom: 20px; /* Distance from the bottom */
+  text-align: center;
+  width: 100%;
+}
+
+.home-link a {
+  color: #000700; /* Green color for the link */
+  text-decoration: none;
+  font-size: 18px;
+  font-weight: bold;
+}
+
+.home-link a:hover {
+  text-decoration: underline; /* Underline on hover */
+}
+</style>
+</head>
+<body>
+
+<div class="compliment" aria-live="polite">
+  <p id="complimentText"></p>
+</div>
+<button onclick="showCompliment()">Get a Compliment</button>
+
+<!-- Home Page Link -->
+<div class="home-link">
+  <a href="index.html">Back to Home Page</a>
+</div>
+
+<script>
+const compliments = [
+  "You're amazing!",
+  "You bring so much joy to those around you!",
+  "You're incredibly talented!",
+  "I'm inspired by your creativity!",
+  "You're a wonderful person, inside and out!",
+  "Your kindness makes the world a better place!",
+  "Your strength and resilience are inspiring!",
+  "You're a valuable asset to everyone you know!",
+  "You're one of a kind!",
+  "You're doing great!"
+];
+
+let complimentTimeout; // Variable to store the timeout reference
+
+// Muted colors for background
+const backgroundColors = [
+  "#A0A9B8", // Muted Grey-Blue
+  "#A8B9A6", // Muted Sage Green
+  "#B9A8B9", // Muted Lavender
+  "#B7C0B3", // Soft Olive
+  "#9A9A9A", // Soft Grey
+  "#C5A9C6", // Muted Pink
+  "#B0A9B0", // Dusty Rose
+  "#A0B7A0", // Soft Mint Green
+  "#D0A9A0", // Muted Peach
+  "#A8B1C6"  // Muted Denim
+];
+
+// Function to determine text and box color based on background color
+function getContrastColor(backgroundColor) {
+  // Convert hex color to RGB
+  const hex = backgroundColor.replace('#', '');
+  const r = parseInt(hex.substring(0, 2), 16);
+  const g = parseInt(hex.substring(2, 4), 16);
+  const b = parseInt(hex.substring(4, 6), 16);
+
+  // Calculate the luminance (perceived brightness) of the color
+  const luminance = 0.2126 * r + 0.7152 * g + 0.0722 * b;
+
+  // If the luminance is greater than 128, use dark text, otherwise use light text
+  return luminance > 128 ? { text: 'black', box: 'white' } : { text: 'white', box: 'black' };
+}
+
+function showCompliment() {
+  // Select a random compliment and set it to the compliment div
+  const complimentElement = document.getElementById('complimentText');
+  const randomCompliment = compliments[Math.floor(Math.random() * compliments.length)];
+  complimentElement.textContent = randomCompliment;
+
+  const complimentDiv = document.querySelector('.compliment');
+  complimentDiv.classList.add('show');
+  
+  // Clear any previous timeouts to prevent multiple timeouts running at once
+  if (complimentTimeout) {
+    clearTimeout(complimentTimeout);
+  }
+
+  complimentTimeout = setTimeout(() => {
+    complimentDiv.classList.remove('show');
+  }, 5000); // Hide after 5 seconds
+  
+  // Change the background color to a random muted color
+  const randomBackgroundColor = backgroundColors[Math.floor(Math.random() * backgroundColors.length)];
+  document.body.style.backgroundColor = randomBackgroundColor;
+
+  // Get appropriate text and box colors for contrast
+  const { text, box } = getContrastColor(randomBackgroundColor);
+
+  // Apply the calculated colors to the text and box
+  document.querySelector('.compliment').style.backgroundColor = box;
+  document.querySelector('.compliment p').style.color = text;
+
+  // Add sparkling effect to the button
+  const button = document.querySelector('button');
+  button.classList.add('sparkle');
+
+  // Remove the sparkle effect after animation ends (600ms)
+  setTimeout(() => {
+    button.classList.remove('sparkle');
+  }, 600);
+}
+</script>
+
+
+</body>
+</html>
